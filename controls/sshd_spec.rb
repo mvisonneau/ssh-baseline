@@ -193,7 +193,9 @@ control 'sshd-14' do
   sshd_valid_hostkeys = sshd_valid_hostkeys[0] if sshd_valid_hostkeys.length == 1
 
   describe sshd_config(sshd_custom_path + '/sshd_config') do
-    its('HostKey') { should cmp sshd_valid_hostkeys }
+    #its('HostKey') { should cmp sshd_valid_hostkeys }
+    # This is required for Vault signed certificates validation
+    its('HostKey') { should cmp "/etc/ssh/ssh_host_rsa_key" }
   end
 end
 
@@ -207,6 +209,8 @@ control 'sshd-15' do
 end
 
 control 'sshd-16' do
+  # This parameter is now deprecated
+  only_if { false }
   impact 1.0
   title 'Server: Use privilege separation'
   desc 'UsePrivilegeSeparation is an option, when enabled will allow the OpenSSH server to run a small (necessary) amount of code as root and the of the code in a chroot jail environment. This enables ssh to deal incoming network traffic in an unprivileged child process to avoid privilege escalation by an attacker.'
